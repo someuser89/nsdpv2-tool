@@ -3,7 +3,7 @@ import socket
 SPORT = 64513
 DPORT = 64515
 
-SRC_MAC = "a0:98:05:11:91:35"
+DST_MAC = "e0:91:f5:97:51:6c"
 SRC_IP = "192.168.0.22"
 
 def TLV(nr, value):
@@ -27,7 +27,7 @@ def buildPkgFirmware():
 		return data.decode("hex")
 	password = "password"
 	data = "\x00\x02\x00\x00"
-	data += convertMac(SRC_MAC)
+	data += convertMac(DST_MAC)
 	data += "\x00\x03\x00\x0a\x00\x00"
 	data += "\x0c\x07\xd2\xf2"
 	data += "\x00"*6 # dest_mac
