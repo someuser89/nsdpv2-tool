@@ -1,4 +1,5 @@
 import socket
+import time
 
 SPORT = 64513
 DPORT = 64515
@@ -49,4 +50,6 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind((SRC_IP, SPORT))
 s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 s.sendto(buildPkgDiscover(), ('<broadcast>', DPORT))
-#s.sendto(buildPkgFirmware(), ('<broadcast>', DPORT))
+time.sleep(5)
+s.sendto(buildPkgFirmware(), ('<broadcast>', DPORT))
+# send via tftp Firmware(Hex-file)
