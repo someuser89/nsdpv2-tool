@@ -75,4 +75,25 @@ def read(rsocket):
 	print("recv=" + message_hex)
 	return (message, address)
 
-read(rsocket)
+def parsDiscover(msg):
+	"pars an discover package"
+	m = binascii.hexlify(msg).decode()
+	ret = {}
+	# magicnummber
+	assert m[:2] == "00"
+	assert m[2:4] == "02"
+	# netgear IP
+	assert m[32:40] == "0c07d2f2"
+	# pars src mac (switch)
+	mac = m[8:20]
+	out = []
+	while mac:
+		out.append(mac[:2])
+		mac = mac[2:]
+	ret["mac"] =  ":".join(out)
+	# return
+	return ret
+
+m, a = read(rsocket)
+data = parsDiscover(m)
+print data
