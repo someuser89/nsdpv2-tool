@@ -1,8 +1,9 @@
 import socket
-import time
+import binascii
 
 SPORT = 64513
 DPORT = 64515
+timeout = 2
 
 DST_MAC = "e0:91:f5:97:51:6c"
 SRC_IP = "192.168.0.22"
@@ -45,11 +46,33 @@ def buildPkgDiscover():
 	data += "\x00\x00" + "\x00"*12
 	return data
 
+# send socket
+ssocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+ssocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+ssocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+ssocket.bind((SRC_IP, SPORT))
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.bind((SRC_IP, SPORT))
-s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-s.sendto(buildPkgDiscover(), ('<broadcast>', DPORT))
-time.sleep(5)
-s.sendto(buildPkgFirmware(), ('<broadcast>', DPORT))
-# send via tftp Firmware(Hex-file)
+# receive socket
+rsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+rsocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+rsocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+rsocket.settimeout(timeout)
+rsocket.bind(("255.255.255.255", SPORT))
+
+# send discover
+ssocket.sendto(buildPkgDiscover(), ("255.255.255.255", DPORT))
+
+def read(rsocket):
+	try:
+		message, address = rsocket.recvfrom(4096)
+	except rsocket.timeout:
+		return (None, None)
+	except rsocket.error as error:
+		if error.errno == errno.EAGAIN:
+			return (None, None)
+		raise
+	message_hex = binascii.hexlify(message).decode()
+	print("recv=" + message_hex)
+	return (message, address)
+
+read(rsocket)
