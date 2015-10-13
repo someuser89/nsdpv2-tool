@@ -50,7 +50,11 @@ def buildPkgDiscover():
 ssocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 ssocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 ssocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-ssocket.bind((SRC_IP, SPORT))
+try:
+	ssocket.bind((SRC_IP, SPORT))
+except socket.error as error:
+	print "Error: " + SRC_IP + " not found any network interface"
+	exit(1)
 
 # receive socket
 rsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
