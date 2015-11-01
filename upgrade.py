@@ -1,5 +1,5 @@
 from optparse import OptionParser
-import func
+from func import *
 
 parser = OptionParser()
 parser.add_option("-s", "--src", help="source ip address", type="str" )
@@ -17,9 +17,9 @@ ssocket = getSendSocket(options.src)
 # get receive socket
 rsocket = getReceiveSocket()
 # enable firmware upgrade mode
-ssocket.sendto(buildPkgFirmware(options.mac, options.password), ("255.255.255.255", func.DPORT))
+ssocket.sendto(buildPkgFirmware(options.mac, options.password), ("255.255.255.255", DPORT))
 #
 message, address = readFromSocket(rsocket)
 data = parsFirmware(message)
-print "Switch response"
-#print address[0], data["mac"]
+assert data['mac'] == options.mac
+print "Switch response!"
