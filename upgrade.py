@@ -23,3 +23,4 @@ message, address = readFromSocket(rsocket)
 data = parsFirmware(message)
 assert data['mac'] == options.mac
 print "Switch response!"
+print "run tftp jet"
